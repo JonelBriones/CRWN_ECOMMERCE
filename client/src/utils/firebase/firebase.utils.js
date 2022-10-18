@@ -2,9 +2,9 @@
 import { initializeApp } from 'firebase/app'
 import {
   getAuth,
-  signInWithRedirect,
   signInWithPopup,
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
 } from 'firebase/auth'
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
 // TODO: Add SDKs for Firebase products that you want to use
@@ -23,7 +23,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig)
 
-const provider = new GoogleAuthProvider() // create a class
+const provider = new GoogleAuthProvider() // create a class with google
 
 provider.setCustomParameters({
   prompt: 'select_account', // forces user to select a email account
@@ -31,18 +31,19 @@ provider.setCustomParameters({
 
 export const auth = getAuth()
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider)
-
 // creating database
 export const db = getFirestore()
 
-export const createUserDocumentFromAuth = async (userAuth) => {
+export const createUserDocumentFromAuth = async (
+  userAuth,
+  additionalInformation = {}
+) => {
+  if (!userAuth) return
   const userDocRef = doc(db, 'users', userAuth.uid)
 
   console.log(userDocRef)
 
   const userSnapShot = await getDoc(userDocRef) // does this instance exist in our database?
-  console.log(userSnapShot)
-  console.log(userSnapShot.exists())
 
   // if user data exist
   if (!userSnapShot.exists()) {
@@ -55,6 +56,7 @@ export const createUserDocumentFromAuth = async (userAuth) => {
         displayName,
         email,
         createdAt,
+        ...additionalInformation,
       })
     } catch (error) {
       console.log('error creating the user', error.message)
@@ -63,4 +65,9 @@ export const createUserDocumentFromAuth = async (userAuth) => {
 
   // if user data does not exist
   return userDocRef
+}
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return
+
+  return await createUserWithEmailAndPassword(auth, email, password)
 }
