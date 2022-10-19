@@ -1,19 +1,21 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import FormInput from '../form-input/form-input.component'
 import './sign-up-form.styles.scss'
 import Button from '../button/button.component'
-import {
-  createAuthUserWithEmailAndPassword,
-  createUserDocumentFromAuth,
-} from '../../utils/firebase/firebase.utils'
+import { createAuthUserWithEmailAndPassword } from '../../utils/firebase/firebase.utils'
+import { UserContext } from '../../contexts/user.context'
+
+const defaultFormFields = {
+  displayName: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+}
 const SignupForm = () => {
-  const [formFields, setFormFields] = useState({
-    displayName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  })
+  const [formFields, setFormFields] = useState(defaultFormFields)
   const { displayName, email, password, confirmPassword } = formFields
+  const { currentUser, setCurrentUser } = useContext(UserContext)
+
   const onSubmitHandler = async (e) => {
     e.preventDefault()
     if (password !== confirmPassword) {
@@ -24,7 +26,9 @@ const SignupForm = () => {
       const { user } = await createAuthUserWithEmailAndPassword(email, password)
       console.log('ON SUBMIT HANDLER', user)
 
-      await createUserDocumentFromAuth(user, { displayName })
+      // const response = await createUserDocumentFromAuth(user, { displayName })
+      setCurrentUser(user)
+      console.log('Logged User: ', currentUser)
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
         alert('Cannot create user, email already in use')
@@ -39,7 +43,7 @@ const SignupForm = () => {
     // const newObject = { ...formFields }
     // newObject[e.target.name] = e.target.value
     // setFormFields(newObject)
-    console.log(formFields)
+    // console.log(formFields)
   }
   return (
     <div className="sign-up-container">
