@@ -7,7 +7,6 @@ import {
   createUserDocumentFromAuth,
   signInAuthUserWithEmailAndPassword,
 } from '../../utils/firebase/firebase.utils'
-import { UserContext } from '../../contexts/user.context'
 
 const SignInForm = () => {
   const [formFields, setFormFields] = useState({
@@ -16,10 +15,7 @@ const SignInForm = () => {
   })
   const { email, password } = formFields
 
-  const { setCurrentUser } = useContext(UserContext)
-
   const signInWithGoogle = async () => {
-    console.log('google')
     const { user } = await signInWithGooglePopup()
     await createUserDocumentFromAuth(user)
   }
@@ -27,8 +23,6 @@ const SignInForm = () => {
     e.preventDefault()
     try {
       const { user } = await signInAuthUserWithEmailAndPassword(email, password)
-      setCurrentUser(user)
-
       setFormFields({
         email: '',
         password: '',
