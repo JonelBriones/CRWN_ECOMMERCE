@@ -29,9 +29,7 @@ const Navigation = () => {
               SIGN IN
             </Link>
           )}
-          <div>
-            <CartIcon />
-          </div>
+          <CartIcon />
         </div>
         {isCartOpen && <CartDropdown />}
       </div>

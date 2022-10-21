@@ -2,8 +2,16 @@ import React, { useContext } from 'react'
 import { CartContext } from '../../contexts/cart.context'
 import CheckoutItem from '../checkout-item/checkout-item.component'
 import './checkout.styles.scss'
+import Button from '../button/button.component'
+import { useNavigate } from 'react-router-dom'
+
 const Checkout = () => {
-  const { cart, addItemToCart, deleteItemFromCart } = useContext(CartContext)
+  const { cart, addItemToCart, deleteItemFromCart, cartTotal } =
+    useContext(CartContext)
+  const navigate = useNavigate()
+  const redirect = () => {
+    navigate('/shop')
+  }
   return (
     <div className="checkout-container">
       <div className="checkout-header">
@@ -26,7 +34,14 @@ const Checkout = () => {
       {cart.map((product) => (
         <CheckoutItem cartItem={product} key={product.id} />
       ))}
-      <span className="total"></span>
+      <div className="header-block">
+        <span className="total">Total: ${cartTotal}</span>
+      </div>
+      {cart.length === 0 ? (
+        <Button onClick={() => redirect()}>Go to shop</Button>
+      ) : (
+        <Button onClick={() => redirect()}>Keep Shopping</Button>
+      )}
     </div>
   )
 }

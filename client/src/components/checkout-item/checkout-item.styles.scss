@@ -27,6 +27,12 @@
 
     .arrow {
       cursor: pointer;
+      // border: 2px solid red;
+    }
+    .arrow.hide {
+      opacity: 0;
+      // border: 2px solid red;
+      cursor: default;
     }
 
     .value {

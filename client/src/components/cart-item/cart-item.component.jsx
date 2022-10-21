@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
 import './cart-item.styles.scss'
-
 const CartItem = ({ product }) => {
   const { name, imageUrl, qty, price, id } = product
   return (
