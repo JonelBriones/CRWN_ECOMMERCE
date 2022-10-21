@@ -35,7 +35,9 @@ const Checkout = () => {
         <CheckoutItem cartItem={product} key={product.id} />
       ))}
       <div className="header-block">
-        <span className="total">Total: ${cartTotal}</span>
+        <span className="total">
+          {cartTotal ? `Total: $${cartTotal}` : 'cart is empty'}
+        </span>
       </div>
       {cart.length === 0 ? (
         <Button onClick={() => redirect()}>Go to shop</Button>

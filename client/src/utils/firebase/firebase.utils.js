@@ -9,11 +9,17 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth'
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  writeBatch,
+  query,
+  getDocs,
+} from 'firebase/firestore'
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: 'AIzaSyCQwp1smw5FlP5elEp_Dqq8ldK3UFsAd7M',
   authDomain: 'cwrn-clothing-ecommerce.firebaseapp.com',
@@ -37,6 +43,36 @@ export const signInWithGooglePopup = () => signInWithPopup(auth, provider)
 
 // creating database
 export const db = getFirestore()
+
+// create a collection
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
+  const collectionRef = collection(db, collectionKey)
+  const batch = writeBatch(db) //
+
+  objectsToAdd.forEach((object) => {
+    const docRef = doc(collectionRef, object.title.toLowerCase())
+    batch.set(docRef, object)
+  })
+  await batch.commit()
+  console.log('done')
+}
+
+export const getCategoriesAndDocuments = async () => {
+  const collectionRef = collection(db, 'categories')
+  const q = query(collectionRef)
+
+  const querySnapshot = await getDocs(q)
+  const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
+    const { title, items } = docSnapshot.data()
+    acc[title.toLowerCase()] = items
+    return acc
+  }, {})
+
+  return categoryMap
+}
 
 export const createUserDocumentFromAuth = async (
   userAuth,
@@ -88,9 +124,3 @@ export const signOutUser = async () => await signOut(auth)
 // run when a user is logged/signed out
 export const onAuthStateChangedListener = (callback) =>
   onAuthStateChanged(auth, callback)
-
-// {
-//   next: callback,
-//   error: errCallback,
-//   complete: completedCallback,
-// }
