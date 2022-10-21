@@ -5,7 +5,6 @@ import CategoryPreview from '../category-preview/category-preview.component'
 import { Link } from 'react-router-dom'
 const Shop = () => {
   const { categoriesMap } = useContext(CategoriesContext)
-  console.log('shop', categoriesMap)
 
   return (
     <div className="shop-container">
