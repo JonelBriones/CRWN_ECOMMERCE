@@ -1,18 +1,49 @@
-import { createContext, useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useReducer } from 'react'
+import { createContext, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import {
   createUserDocumentFromAuth,
   onAuthStateChangedListener,
   signOutUser,
 } from '../utils/firebase/firebase.utils'
+
 export const UserContext = createContext({
   currentUser: null,
   setCurrentUser: () => null,
 })
 
+export const USER_ACTION_TYPES = {
+  SET_CURRENT_USER: 'SET_CURRENT_USER',
+}
+
+const userReducer = (state, action) => {
+  console.log('dispatched', action)
+  const { type, payload } = action
+
+  switch (type) {
+    case USER_ACTION_TYPES.SET_CURRENT_USER:
+      return {
+        ...state,
+        currentUser: payload,
+      }
+    default:
+      throw new Error(`Unhandled type ${type} in userReducer`)
+  }
+}
+
+const INITIAL_STATE = {
+  currentUser: null,
+}
+
 export const UserProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null)
-  const { currentPage } = useParams()
+  const [state, dispatch] = useReducer(userReducer, INITIAL_STATE)
+  const { currentUser } = state
+  console.log('USER', currentUser)
+  const setCurrentUser = (user) => {
+    dispatch({ type: USER_ACTION_TYPES.SET_CURRENT_USER, payload: user })
+  }
+  // const [currentUser, setCurrentUser] = useState(null)
   const navigate = useNavigate()
   const redirect = (url) => {
     navigate(url)
@@ -28,7 +59,7 @@ export const UserProvider = ({ children }) => {
       console.log('unsubscribe', user)
       setCurrentUser(user)
       if (window.location.pathname === '/auth') {
-        console.log('YOU ARE ON AUTH PAGE')
+        // console.log('YOU ARE ON AUTH PAGE')
         redirect('/')
       }
     })

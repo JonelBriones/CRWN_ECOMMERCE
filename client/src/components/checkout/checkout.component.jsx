@@ -13,38 +13,43 @@ const Checkout = () => {
     navigate('/shop')
   }
   return (
-    <div className="checkout-container">
-      <div className="checkout-header">
-        <div className="header-block">
-          <span>Product</span>
+    <>
+      {cart.length !== 0 ? (
+        <div className="checkout-container">
+          <div className="checkout-header">
+            <div className="header-block">
+              <span>Product</span>
+            </div>
+            <div className="header-block">
+              <span>Description</span>
+            </div>
+            <div className="header-block">
+              <span>Quantity</span>
+            </div>
+            <div className="header-block">
+              <span>Price</span>
+            </div>
+            <div className="header-block">
+              <span>Remove</span>
+            </div>
+          </div>
+          {cart.map((product) => (
+            <CheckoutItem cartItem={product} key={product.id} />
+          ))}
+          <div className="header-block">
+            <span className="total">
+              {cartTotal ? `Total: $${cartTotal}` : 'cart is empty'}
+            </span>
+          </div>
+          <Button onClick={() => redirect()}>Keep Shopping</Button>
         </div>
-        <div className="header-block">
-          <span>Description</span>
-        </div>
-        <div className="header-block">
-          <span>Quantity</span>
-        </div>
-        <div className="header-block">
-          <span>Price</span>
-        </div>
-        <div className="header-block">
-          <span>Remove</span>
-        </div>
-      </div>
-      {cart.map((product) => (
-        <CheckoutItem cartItem={product} key={product.id} />
-      ))}
-      <div className="header-block">
-        <span className="total">
-          {cartTotal ? `Total: $${cartTotal}` : 'cart is empty'}
-        </span>
-      </div>
-      {cart.length === 0 ? (
-        <Button onClick={() => redirect()}>Go to shop</Button>
       ) : (
-        <Button onClick={() => redirect()}>Keep Shopping</Button>
+        <div className="checkout-container">
+          <h1>CART IS EMPTY</h1>
+          <Button onClick={() => redirect()}>Go to shop</Button>
+        </div>
       )}
-    </div>
+    </>
   )
 }
 
