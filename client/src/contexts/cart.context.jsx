@@ -1,7 +1,6 @@
 import { useReducer } from 'react'
-import { useEffect } from 'react'
-import { createContext, useState } from 'react'
-import { USER_ACTION_TYPES } from './user.context'
+import { createContext } from 'react'
+import { createAction } from '../reducers/reducer.utils'
 
 export const CartContext = createContext({
   isCartOpen: false,
@@ -25,16 +24,14 @@ const INITIAL_STATE = {
 
 const cartReducer = (state, action) => {
   const { type, payload } = action
-  console.log('dispatch payload', payload)
+  // console.log('dispatch payload', payload)
   switch (type) {
     case CART_ACTION_TYPES.SET_CART:
-      // console.log('payload', payload)
       return {
         ...state,
         ...payload,
       }
     case CART_ACTION_TYPES.SET_IS_CART_OPEN:
-      // console.log('payload', payload)
       return {
         ...state,
         isCartOpen: payload,
@@ -51,6 +48,7 @@ export const CartProvider = ({ children }) => {
   )
 
   //  EACH TIME CART IS UPDATED RUN REDUCER
+  // USE REDUCER IF MULTIPLE DATA NEEDS TO BE RENDERED WITH ONE FUCTION
   const updateCartReducer = (newCart) => {
     const updateCartTotal = newCart.reduce(
       (previousValue, currentValue) =>
@@ -62,27 +60,26 @@ export const CartProvider = ({ children }) => {
         currentValue.qty ? previousValue + currentValue.qty : previousValue,
       0
     )
-    dispatch({
-      type: CART_ACTION_TYPES.SET_CART,
-      payload: {
+    dispatch(
+      createAction(CART_ACTION_TYPES.SET_CART, {
         cart: newCart,
         cartTotal: updateCartTotal,
         cartCount: updateCartCount,
-      },
-    })
+      })
+    )
   }
 
   const addItem = (cart, productObject) => {
     const exist = cart.find((product) => product.id === productObject.id)
     if (exist) {
-      console.log('Updating Product Qty', exist)
+      // console.log('Updating Product Qty', exist)
       return cart.map((product) =>
         product.id === productObject.id
           ? { ...exist, qty: exist.qty + 1 }
           : product
       )
     } else {
-      console.log('Adding item to cart', productObject)
+      // console.log('Adding item to cart', productObject)
       return [...cart, { ...productObject, qty: 1 }]
     }
   }
@@ -93,7 +90,7 @@ export const CartProvider = ({ children }) => {
   const deleteItem = (cart, productObject) => {
     const exist = cart.find((product) => product.id === productObject.id)
     if (exist) {
-      console.log('Updating Product Qty', exist)
+      // console.log('Updating Product Qty', exist)
       return cart.map((product) =>
         product.id === productObject.id
           ? { ...exist, qty: exist.qty - 1 }
@@ -106,7 +103,7 @@ export const CartProvider = ({ children }) => {
     updateCartReducer(updateCartItems)
   }
   const clearItem = (cart, productObject) => {
-    console.log('Clearing Product from cart', productObject)
+    // console.log('Clearing Product from cart', productObject)
     return cart.filter((product) => product.id !== productObject.id)
   }
   const clearFromCart = (productObject) => {
@@ -115,7 +112,7 @@ export const CartProvider = ({ children }) => {
   }
 
   const setIsCartOpen = (bool) => {
-    dispatch({ type: 'SET_IS_CART_OPEN', payload: bool })
+    dispatch(createAction(CART_ACTION_TYPES.SET_IS_CART_OPEN, bool))
   }
 
   return (

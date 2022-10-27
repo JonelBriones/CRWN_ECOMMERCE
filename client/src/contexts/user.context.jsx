@@ -1,7 +1,7 @@
 import { useReducer } from 'react'
 import { createContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import { createAction } from '../reducers/reducer.utils'
 import {
   createUserDocumentFromAuth,
   onAuthStateChangedListener,
@@ -18,7 +18,7 @@ export const USER_ACTION_TYPES = {
 }
 
 const userReducer = (state, action) => {
-  console.log('dispatched', action)
+  // console.log('dispatched', action)
   const { type, payload } = action
 
   switch (type) {
@@ -37,30 +37,21 @@ const INITIAL_STATE = {
 }
 
 export const UserProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(userReducer, INITIAL_STATE)
-  const { currentUser } = state
-  console.log('USER', currentUser)
+  const [{ currentUser }, dispatch] = useReducer(userReducer, INITIAL_STATE)
   const setCurrentUser = (user) => {
-    dispatch({ type: USER_ACTION_TYPES.SET_CURRENT_USER, payload: user })
+    dispatch(createAction(USER_ACTION_TYPES.SET_CURRENT_USER, user))
   }
-  // const [currentUser, setCurrentUser] = useState(null)
   const navigate = useNavigate()
-  const redirect = (url) => {
-    navigate(url)
-  }
   const value = { currentUser, setCurrentUser }
   // signOutUser()
   useEffect(() => {
     const unsubscribe = onAuthStateChangedListener((user) => {
-      // console.log(user)
       if (user) {
         createUserDocumentFromAuth(user)
       }
-      console.log('unsubscribe', user)
       setCurrentUser(user)
       if (window.location.pathname === '/auth') {
-        // console.log('YOU ARE ON AUTH PAGE')
-        redirect('/')
+        navigate('/')
       }
     })
     return unsubscribe
