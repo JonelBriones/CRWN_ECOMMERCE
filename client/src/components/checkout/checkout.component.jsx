@@ -1,13 +1,16 @@
 import React, { useContext } from 'react'
-import { CartContext } from '../../contexts/cart.context'
 import CheckoutItem from '../checkout-item/checkout-item.component'
 import './checkout.styles.scss'
 import Button from '../button/button.component'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { selectCart, selectCartTotal } from '../../store/cart/cart.selector'
 
 const Checkout = () => {
-  const { cart, addItemToCart, deleteItemFromCart, cartTotal } =
-    useContext(CartContext)
+  // const { cart, addItemToCart, deleteItemFromCart, cartTotal } =
+  //   useContext(CartContext)
+  const cart = useSelector(selectCart)
+  const cartTotal = useSelector(selectCartTotal)
   const navigate = useNavigate()
   const redirect = () => {
     navigate('/shop')

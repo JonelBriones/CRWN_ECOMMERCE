@@ -12,9 +12,14 @@ import { CartContext } from '../../contexts/cart.context'
 
 import { useSelector } from 'react-redux'
 import { selectorCurrentUser } from '../../store/user/user.selector'
+import { selectIsCartOpen } from '../../store/cart/cart.selector'
+// import { selectCartMap } from '../../store/cart/cart.selector'
+
 const Navigation = () => {
   const currentUser = useSelector(selectorCurrentUser)
-  const { isCartOpen } = useContext(CartContext)
+  const isCartOpen = useSelector(selectIsCartOpen)
+
+  // const { isCartOpen } = useContext(CartContext)
   return (
     <>
       <div className="navigation">
