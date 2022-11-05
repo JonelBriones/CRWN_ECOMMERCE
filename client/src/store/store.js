@@ -1,27 +1,42 @@
 import { compose, legacy_createStore, applyMiddleware } from 'redux'
-// import logger from 'redux-logger'
+import { persistStore, persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
+import logger from 'redux-logger'
+import { loggerMiddleware } from './middleware/logger'
+// USE ONE FOR ASYNCRHOUNOUS REDUX
+// import thunk from 'redux-thunk'
+import createSagaMiddleware from 'redux-saga'
+import { rootSaga } from './root-saga'
+
 import { rootReducer } from './rooter-reducer'
 
 // root-reducer
-const loggerMiddleware = (store) => (next) => (action) => {
-  if (!action.type) {
-    return next(action)
-  }
-  console.log('TYPE', action.type)
-  console.log('PAYLOAD', action.payload)
-  console.log('CURRENT_STATE', store.getState())
 
-  next(action)
-
-  console.log('NEXT_STATE', store.getState())
+const persistConfig = {
+  key: 'root',
+  storage,
+  // blacklist: ['user'],
+  whitelist: ['cart'],
 }
+//  ROOT SAGA MIDDLEWRE
+const sagaMiddleWare = createSagaMiddleware()
 
-const middleWares = [loggerMiddleware]
+// KEEP LOCAL STATE IN SESSION
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+
+// DEVTOOLS FOR REDUX
+const middleWares = [
+  process.env.NODE_ENV !== 'production' && logger,
+  sagaMiddleWare,
+  // thunk,
+].filter(Boolean)
 
 const composedEnchancers = compose(applyMiddleware(...middleWares))
 
 export const store = legacy_createStore(
-  rootReducer,
+  persistedReducer,
   undefined,
   composedEnchancers
 )
+sagaMiddleWare.run(rootSaga)
+export const persistor = persistStore(store)
